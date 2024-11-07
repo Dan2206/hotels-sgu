@@ -5,6 +5,8 @@ RUN curl -sSL https://install.python-poetry.org | python
 ENV PATH="${PATH}:/root/.local/bin"
 COPY ./src /app/src
 COPY pyproject.toml /app/
+COPY migration /app/migration
+COPY alembic.ini /app/
 ENV PYTHONPATH /app/src
 WORKDIR /app
 RUN poetry config virtualenvs.create false \
