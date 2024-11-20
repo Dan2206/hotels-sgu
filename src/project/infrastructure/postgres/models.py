@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import date, datetime
 from sqlalchemy import UniqueConstraint, ForeignKey, String, CheckConstraint, Text
+from sqlalchemy.sql import func
 
 from project.infrastructure.postgres.database import Base
 
@@ -15,11 +16,15 @@ class Client(Base):
     date_of_birth: Mapped[date] = mapped_column(nullable=False)
     type_of_document: Mapped[str] = mapped_column(String(50), nullable=False)
     document: Mapped[str] = mapped_column(String(50), nullable=False)
-    date_of_reg: Mapped[datetime] = mapped_column(nullable=False)
-    email: Mapped[str] = mapped_column(String(100), nullable=True)
+    date_of_reg: Mapped[datetime] = mapped_column(nullable=False, default=func.now())
+    email: Mapped[str] = mapped_column(String(100), nullable=False)
     phone: Mapped[str] = mapped_column(String(100), nullable=True)
+
+    unique_document_constraint = 'unique_document'
+    unique_email_constraint = 'unique_email'
     __table_args__ = (
-        UniqueConstraint('document', 'type_of_document'),
+        UniqueConstraint('document', 'type_of_document', name=unique_document_constraint),
+        UniqueConstraint('email', name=unique_email_constraint)
     )
 
 

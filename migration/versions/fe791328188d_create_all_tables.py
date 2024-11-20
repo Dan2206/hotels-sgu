@@ -27,7 +27,7 @@ def upgrade():
     sa.Column('email', sa.String(length=100), nullable=True),
     sa.Column('phone', sa.String(length=100), nullable=False),
     sa.PrimaryKeyConstraint('id'),
-    schema='hotels_schema'
+    schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('hotels',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -37,7 +37,7 @@ def upgrade():
     sa.CheckConstraint('stars >= 0 AND stars <= 5'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name'),
-    schema='hotels_schema'
+    schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('room_types_book',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -47,7 +47,7 @@ def upgrade():
     sa.Column('extra_places', sa.Integer(), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
-    schema='hotels_schema'
+    schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('bookings',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -66,7 +66,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['room_type'], ['hotels_schema.room_types_book.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['who_buy'], ['hotels_schema.buyers.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    schema='hotels_schema'
+    schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('prices',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -80,7 +80,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['category'], ['hotels_schema.room_types_book.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['hotel'], ['hotels_schema.hotels.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    schema='hotels_schema'
+    schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('rooms',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -90,7 +90,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['hotel'], ['hotels_schema.hotels.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('hotel', 'room_num', name='uq_hotel_room'),
-    schema='hotels_schema'
+    schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('services',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -100,7 +100,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['hotel'], ['hotels_schema.hotels.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('hotel', 'name'),
-    schema='hotels_schema'
+    schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('bookings_clients',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -109,7 +109,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['booking'], ['hotels_schema.bookings.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['client'], ['hotels_schema.clients.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    schema='hotels_schema'
+    schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('prices_services',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -121,7 +121,7 @@ def upgrade():
     sa.CheckConstraint('price > 0'),
     sa.ForeignKeyConstraint(['service'], ['hotels_schema.services.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    schema='hotels_schema'
+    schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('residences',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -140,7 +140,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['room'], ['hotels_schema.rooms.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['who_buy'], ['hotels_schema.buyers.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    schema='hotels_schema'
+    schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('room_types',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -151,7 +151,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['category'], ['hotels_schema.room_types_book.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['room'], ['hotels_schema.rooms.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    schema='hotels_schema'
+    schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('services_rendered',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -162,7 +162,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['client'], ['hotels_schema.clients.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['service'], ['hotels_schema.services.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    schema='hotels_schema'
+    schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('residences_clients',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -171,43 +171,43 @@ def upgrade():
     sa.ForeignKeyConstraint(['client'], ['hotels_schema.clients.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['residence'], ['hotels_schema.residences.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    schema='hotels_schema'
+    schema=settings.POSTGRES_SCHEMA
     )
     op.alter_column('clients', 'surname',
                existing_type=sa.VARCHAR(length=255),
                type_=sa.String(length=100),
                existing_nullable=False,
-               schema='hotels_schema')
+               schema=settings.POSTGRES_SCHEMA)
     op.alter_column('clients', 'name',
                existing_type=sa.VARCHAR(length=255),
                type_=sa.String(length=100),
                existing_nullable=False,
-               schema='hotels_schema')
+               schema=settings.POSTGRES_SCHEMA)
     op.alter_column('clients', 'patronymic',
                existing_type=sa.VARCHAR(length=255),
                type_=sa.String(length=100),
                existing_nullable=False,
-               schema='hotels_schema')
+               schema=settings.POSTGRES_SCHEMA)
     op.alter_column('clients', 'type_of_document',
                existing_type=sa.VARCHAR(length=255),
                type_=sa.String(length=50),
                existing_nullable=False,
-               schema='hotels_schema')
+               schema=settings.POSTGRES_SCHEMA)
     op.alter_column('clients', 'document',
                existing_type=sa.VARCHAR(length=255),
                type_=sa.String(length=50),
                existing_nullable=False,
-               schema='hotels_schema')
+               schema=settings.POSTGRES_SCHEMA)
     op.alter_column('clients', 'email',
                existing_type=sa.VARCHAR(length=255),
                type_=sa.String(length=100),
                existing_nullable=True,
-               schema='hotels_schema')
+               schema=settings.POSTGRES_SCHEMA)
     op.alter_column('clients', 'phone',
                existing_type=sa.VARCHAR(length=255),
                type_=sa.String(length=100),
                existing_nullable=True,
-               schema='hotels_schema')
+               schema=settings.POSTGRES_SCHEMA)
     # ### end Alembic commands ###
 
 
@@ -217,48 +217,48 @@ def downgrade():
                existing_type=sa.String(length=100),
                type_=sa.VARCHAR(length=255),
                existing_nullable=True,
-               schema='hotels_schema')
+               schema=settings.POSTGRES_SCHEMA)
     op.alter_column('clients', 'email',
                existing_type=sa.String(length=100),
                type_=sa.VARCHAR(length=255),
                existing_nullable=True,
-               schema='hotels_schema')
+               schema=settings.POSTGRES_SCHEMA)
     op.alter_column('clients', 'document',
                existing_type=sa.String(length=50),
                type_=sa.VARCHAR(length=255),
                existing_nullable=False,
-               schema='hotels_schema')
+               schema=settings.POSTGRES_SCHEMA)
     op.alter_column('clients', 'type_of_document',
                existing_type=sa.String(length=50),
                type_=sa.VARCHAR(length=255),
                existing_nullable=False,
-               schema='hotels_schema')
+               schema=settings.POSTGRES_SCHEMA)
     op.alter_column('clients', 'patronymic',
                existing_type=sa.String(length=100),
                type_=sa.VARCHAR(length=255),
                existing_nullable=False,
-               schema='hotels_schema')
+               schema=settings.POSTGRES_SCHEMA)
     op.alter_column('clients', 'name',
                existing_type=sa.String(length=100),
                type_=sa.VARCHAR(length=255),
                existing_nullable=False,
-               schema='hotels_schema')
+               schema=settings.POSTGRES_SCHEMA)
     op.alter_column('clients', 'surname',
                existing_type=sa.String(length=100),
                type_=sa.VARCHAR(length=255),
                existing_nullable=False,
-               schema='hotels_schema')
-    op.drop_table('residences_clients', schema='hotels_schema')
-    op.drop_table('services_rendered', schema='hotels_schema')
-    op.drop_table('room_types', schema='hotels_schema')
-    op.drop_table('residences', schema='hotels_schema')
-    op.drop_table('prices_services', schema='hotels_schema')
-    op.drop_table('bookings_clients', schema='hotels_schema')
-    op.drop_table('services', schema='hotels_schema')
-    op.drop_table('rooms', schema='hotels_schema')
-    op.drop_table('prices', schema='hotels_schema')
-    op.drop_table('bookings', schema='hotels_schema')
-    op.drop_table('room_types_book', schema='hotels_schema')
-    op.drop_table('hotels', schema='hotels_schema')
-    op.drop_table('buyers', schema='hotels_schema')
+               schema=settings.POSTGRES_SCHEMA)
+    op.drop_table('residences_clients', schema=settings.POSTGRES_SCHEMA)
+    op.drop_table('services_rendered', schema=settings.POSTGRES_SCHEMA)
+    op.drop_table('room_types', schema=settings.POSTGRES_SCHEMA)
+    op.drop_table('residences', schema=settings.POSTGRES_SCHEMA)
+    op.drop_table('prices_services', schema=settings.POSTGRES_SCHEMA)
+    op.drop_table('bookings_clients', schema=settings.POSTGRES_SCHEMA)
+    op.drop_table('services', schema=settings.POSTGRES_SCHEMA)
+    op.drop_table('rooms', schema=settings.POSTGRES_SCHEMA)
+    op.drop_table('prices', schema=settings.POSTGRES_SCHEMA)
+    op.drop_table('bookings', schema=settings.POSTGRES_SCHEMA)
+    op.drop_table('room_types_book', schema=settings.POSTGRES_SCHEMA)
+    op.drop_table('hotels', schema=settings.POSTGRES_SCHEMA)
+    op.drop_table('buyers', schema=settings.POSTGRES_SCHEMA)
     # ### end Alembic commands ###
