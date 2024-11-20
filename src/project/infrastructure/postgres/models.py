@@ -32,12 +32,15 @@ class Hotel(Base):
     __tablename__ = "hotels"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
     address: Mapped[str] = mapped_column(String(500), nullable=False)
     stars: Mapped[int] = mapped_column(nullable=False)
 
+    check_stars_constraint = 'check_stars'
+    unique_name_constraint = 'unique_name'
     __table_args__ = (
-        CheckConstraint("stars >= 0 AND stars <= 5"),
+        CheckConstraint("stars >= 0 AND stars <= 5", name=check_stars_constraint),
+        UniqueConstraint('name', name=unique_name_constraint)
     )
 
 
