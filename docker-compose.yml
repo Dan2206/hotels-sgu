@@ -37,6 +37,7 @@ services:
     build:
       context: .
     pull_policy: build
+    # in case of "./src/start.sh" not found check LF format is used, not CR LF
     entrypoint: sh -c "./src/start.sh"
 
 
