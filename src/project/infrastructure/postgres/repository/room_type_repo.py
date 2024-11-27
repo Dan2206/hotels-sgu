@@ -8,7 +8,7 @@ from project.schemas.room_type import RoomTypeSchema, RoomTypeCreateUpdateSchema
 from project.infrastructure.postgres.models import RoomType
 
 from project.core.config import settings
-from project.core.exceptions import RoomTypeNotFound, RoomTypeBadForeignKey, RoomTypeBadDate
+from project.core.exceptions.room_type import RoomTypeNotFound, RoomTypeBadForeignKey, RoomTypeBadDate
 
 
 class RoomTypeRepository:

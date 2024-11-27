@@ -1,8 +1,8 @@
-"""initial
+"""new migration with upd names
 
-Revision ID: bda7641ae997
+Revision ID: a190b8aed674
 Revises: 
-Create Date: 2024-11-07 09:15:50.453342
+Create Date: 2024-11-28 01:20:39.965961
 
 """
 from alembic import op
@@ -12,7 +12,7 @@ from project.core.config import settings
 
 
 # revision identifiers, used by Alembic.
-revision = 'bda7641ae997'
+revision = 'a190b8aed674'
 down_revision = None
 branch_labels = None
 depends_on = None

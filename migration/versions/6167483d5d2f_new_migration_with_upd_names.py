@@ -1,8 +1,8 @@
-"""create all tables
+"""new migration with upd names
 
-Revision ID: fe791328188d
-Revises: 5c4905d2016a
-Create Date: 2024-11-20 18:43:06.516613
+Revision ID: 6167483d5d2f
+Revises: a190b8aed674
+Create Date: 2024-11-28 01:26:04.457535
 
 """
 from alembic import op
@@ -12,8 +12,8 @@ from project.core.config import settings
 
 
 # revision identifiers, used by Alembic.
-revision = 'fe791328188d'
-down_revision = '5c4905d2016a'
+revision = '6167483d5d2f'
+down_revision = 'a190b8aed674'
 branch_labels = None
 depends_on = None
 
@@ -29,14 +29,30 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     schema=settings.POSTGRES_SCHEMA
     )
+    op.create_table('clients',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('surname', sa.String(length=100), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('patronymic', sa.String(length=100), nullable=False),
+    sa.Column('date_of_birth', sa.Date(), nullable=False),
+    sa.Column('type_of_document', sa.String(length=50), nullable=False),
+    sa.Column('document', sa.String(length=50), nullable=False),
+    sa.Column('date_of_reg', sa.DateTime(), nullable=False),
+    sa.Column('email', sa.String(length=100), nullable=False),
+    sa.Column('phone', sa.String(length=100), nullable=True),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('document', 'type_of_document', name='unique_document'),
+    sa.UniqueConstraint('email', name='unique_email'),
+    schema=settings.POSTGRES_SCHEMA
+    )
     op.create_table('hotels',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('address', sa.String(length=500), nullable=False),
     sa.Column('stars', sa.Integer(), nullable=False),
-    sa.CheckConstraint('stars >= 0 AND stars <= 5'),
+    sa.CheckConstraint('stars >= 0 AND stars <= 5', name='check_stars'),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name'),
+    sa.UniqueConstraint('name', name='unique_name'),
     schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('room_types_book',
@@ -55,12 +71,12 @@ def upgrade():
     sa.Column('room_type', sa.Integer(), nullable=False),
     sa.Column('who_buy', sa.Integer(), nullable=False),
     sa.Column('main_client', sa.Integer(), nullable=False),
-    sa.Column('date_of_booking', sa.DateTime(), nullable=False),
+    sa.Column('date_of_booking', sa.DateTime(timezone=True), nullable=False),
     sa.Column('date_of_start', sa.Date(), nullable=False),
     sa.Column('date_of_end', sa.Date(), nullable=False),
     sa.Column('extra', sa.String(length=500), nullable=True),
     sa.Column('reason_cancel', sa.String(length=500), nullable=True),
-    sa.CheckConstraint('date_of_end > date_of_start'),
+    sa.CheckConstraint('date_of_end > date_of_start', name='date_comp_constraint'),
     sa.ForeignKeyConstraint(['hotel'], ['hotels_schema.hotels.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['main_client'], ['hotels_schema.clients.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['room_type'], ['hotels_schema.room_types_book.id'], onupdate='CASCADE', ondelete='CASCADE'),
@@ -75,8 +91,8 @@ def upgrade():
     sa.Column('price', sa.Integer(), nullable=False),
     sa.Column('date_of_start', sa.Date(), nullable=False),
     sa.Column('date_of_end', sa.Date(), nullable=False),
-    sa.CheckConstraint('date_of_end >= date_of_start'),
-    sa.CheckConstraint('price > 0'),
+    sa.CheckConstraint('date_of_end >= date_of_start', name='check_date_constraint'),
+    sa.CheckConstraint('price > 0', name='check_price_constraint'),
     sa.ForeignKeyConstraint(['category'], ['hotels_schema.room_types_book.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['hotel'], ['hotels_schema.hotels.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
@@ -87,9 +103,9 @@ def upgrade():
     sa.Column('room_num', sa.Integer(), nullable=False),
     sa.Column('hotel', sa.Integer(), nullable=False),
     sa.Column('active', sa.Boolean(), nullable=False),
-    sa.ForeignKeyConstraint(['hotel'], ['hotels_schema.hotels.id'], onupdate='CASCADE', ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['hotel'], ['hotels_schema.hotels.id'], name='fkey_rooms_hotels', onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('hotel', 'room_num', name='uq_hotel_room'),
+    sa.UniqueConstraint('hotel', 'room_num', name='unique_room_num'),
     schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('services',
@@ -99,7 +115,7 @@ def upgrade():
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['hotel'], ['hotels_schema.hotels.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('hotel', 'name'),
+    sa.UniqueConstraint('hotel', 'name', name='unique_hotel_name_constraint'),
     schema=settings.POSTGRES_SCHEMA
     )
     op.create_table('bookings_clients',
@@ -117,8 +133,8 @@ def upgrade():
     sa.Column('date_of_start', sa.Date(), nullable=False),
     sa.Column('date_of_end', sa.Date(), nullable=False),
     sa.Column('price', sa.Integer(), nullable=False),
-    sa.CheckConstraint('date_of_end > date_of_start'),
-    sa.CheckConstraint('price > 0'),
+    sa.CheckConstraint('date_of_end > date_of_start', name='check_date_service_constraint'),
+    sa.CheckConstraint('price > 0', name='check_price_service_constraint'),
     sa.ForeignKeyConstraint(['service'], ['hotels_schema.services.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
     schema=settings.POSTGRES_SCHEMA
@@ -133,7 +149,7 @@ def upgrade():
     sa.Column('date_of_start', sa.Date(), nullable=False),
     sa.Column('date_of_end', sa.Date(), nullable=False),
     sa.Column('sum_price', sa.Integer(), nullable=True),
-    sa.CheckConstraint('date_of_end > date_of_start'),
+    sa.CheckConstraint('date_of_end > date_of_start', name='date_comp_residences_constraint'),
     sa.ForeignKeyConstraint(['booking'], ['hotels_schema.bookings.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['hotel'], ['hotels_schema.hotels.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['main_client'], ['hotels_schema.clients.id'], onupdate='CASCADE', ondelete='CASCADE'),
@@ -148,6 +164,7 @@ def upgrade():
     sa.Column('category', sa.Integer(), nullable=False),
     sa.Column('date_of_start', sa.Date(), nullable=False),
     sa.Column('date_of_end', sa.Date(), nullable=False),
+    sa.CheckConstraint('date_of_end > date_of_start', name='check_date_room_type_constraint'),
     sa.ForeignKeyConstraint(['category'], ['hotels_schema.room_types_book.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['room'], ['hotels_schema.rooms.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
@@ -173,81 +190,11 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     schema=settings.POSTGRES_SCHEMA
     )
-    op.alter_column('clients', 'surname',
-               existing_type=sa.VARCHAR(length=255),
-               type_=sa.String(length=100),
-               existing_nullable=False,
-               schema=settings.POSTGRES_SCHEMA)
-    op.alter_column('clients', 'name',
-               existing_type=sa.VARCHAR(length=255),
-               type_=sa.String(length=100),
-               existing_nullable=False,
-               schema=settings.POSTGRES_SCHEMA)
-    op.alter_column('clients', 'patronymic',
-               existing_type=sa.VARCHAR(length=255),
-               type_=sa.String(length=100),
-               existing_nullable=False,
-               schema=settings.POSTGRES_SCHEMA)
-    op.alter_column('clients', 'type_of_document',
-               existing_type=sa.VARCHAR(length=255),
-               type_=sa.String(length=50),
-               existing_nullable=False,
-               schema=settings.POSTGRES_SCHEMA)
-    op.alter_column('clients', 'document',
-               existing_type=sa.VARCHAR(length=255),
-               type_=sa.String(length=50),
-               existing_nullable=False,
-               schema=settings.POSTGRES_SCHEMA)
-    op.alter_column('clients', 'email',
-               existing_type=sa.VARCHAR(length=255),
-               type_=sa.String(length=100),
-               existing_nullable=True,
-               schema=settings.POSTGRES_SCHEMA)
-    op.alter_column('clients', 'phone',
-               existing_type=sa.VARCHAR(length=255),
-               type_=sa.String(length=100),
-               existing_nullable=True,
-               schema=settings.POSTGRES_SCHEMA)
     # ### end Alembic commands ###
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
-    op.alter_column('clients', 'phone',
-               existing_type=sa.String(length=100),
-               type_=sa.VARCHAR(length=255),
-               existing_nullable=True,
-               schema=settings.POSTGRES_SCHEMA)
-    op.alter_column('clients', 'email',
-               existing_type=sa.String(length=100),
-               type_=sa.VARCHAR(length=255),
-               existing_nullable=True,
-               schema=settings.POSTGRES_SCHEMA)
-    op.alter_column('clients', 'document',
-               existing_type=sa.String(length=50),
-               type_=sa.VARCHAR(length=255),
-               existing_nullable=False,
-               schema=settings.POSTGRES_SCHEMA)
-    op.alter_column('clients', 'type_of_document',
-               existing_type=sa.String(length=50),
-               type_=sa.VARCHAR(length=255),
-               existing_nullable=False,
-               schema=settings.POSTGRES_SCHEMA)
-    op.alter_column('clients', 'patronymic',
-               existing_type=sa.String(length=100),
-               type_=sa.VARCHAR(length=255),
-               existing_nullable=False,
-               schema=settings.POSTGRES_SCHEMA)
-    op.alter_column('clients', 'name',
-               existing_type=sa.String(length=100),
-               type_=sa.VARCHAR(length=255),
-               existing_nullable=False,
-               schema=settings.POSTGRES_SCHEMA)
-    op.alter_column('clients', 'surname',
-               existing_type=sa.String(length=100),
-               type_=sa.VARCHAR(length=255),
-               existing_nullable=False,
-               schema=settings.POSTGRES_SCHEMA)
     op.drop_table('residences_clients', schema=settings.POSTGRES_SCHEMA)
     op.drop_table('services_rendered', schema=settings.POSTGRES_SCHEMA)
     op.drop_table('room_types', schema=settings.POSTGRES_SCHEMA)
@@ -260,5 +207,6 @@ def downgrade():
     op.drop_table('bookings', schema=settings.POSTGRES_SCHEMA)
     op.drop_table('room_types_book', schema=settings.POSTGRES_SCHEMA)
     op.drop_table('hotels', schema=settings.POSTGRES_SCHEMA)
+    op.drop_table('clients', schema=settings.POSTGRES_SCHEMA)
     op.drop_table('buyers', schema=settings.POSTGRES_SCHEMA)
     # ### end Alembic commands ###

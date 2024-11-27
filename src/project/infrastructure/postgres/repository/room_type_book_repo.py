@@ -8,7 +8,7 @@ from project.schemas.room_type_book import RoomTypeBookSchema, RoomTypeBookCreat
 from project.infrastructure.postgres.models import RoomTypeBook
 
 from project.core.config import settings
-from project.core.exceptions import RoomTypeBookNotFound, RoomTypeBook
+from project.core.exceptions.room_type_book import RoomTypeBookNotFound
 
 
 class RoomTypeBookRepository:

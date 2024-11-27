@@ -8,7 +8,7 @@ from project.schemas.service_rendered import ServiceRenderedSchema, ServiceRende
 from project.infrastructure.postgres.models import ServiceRendered
 
 from project.core.config import settings
-from project.core.exceptions import ServiceRenderedBadForeignKey, ServiceRenderedNotFound
+from project.core.exceptions.service_rendered import ServiceRenderedBadForeignKey, ServiceRenderedNotFound
 
 
 class ServiceRenderedRepository:

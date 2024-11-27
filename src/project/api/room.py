@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 
 from project.schemas.room import RoomSchema, RoomCreateUpdateSchema
-from project.core.exceptions import RoomNoHotel, RoomNumAlreadyExists, RoomNotFound
+from project.core.exceptions.room import RoomNoHotel, RoomNumAlreadyExists, RoomNotFound
 from project.api.depends import database, client_repo, hotel_repo, room_repo
 
 router = APIRouter()

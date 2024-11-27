@@ -8,7 +8,7 @@ from project.schemas.room import RoomSchema, RoomCreateUpdateSchema
 from project.infrastructure.postgres.models import Room
 
 from project.core.config import settings
-from project.core.exceptions import RoomNoHotel, RoomNumAlreadyExists, RoomNotFound
+from project.core.exceptions.room import RoomNoHotel, RoomNumAlreadyExists, RoomNotFound
 
 
 class RoomRepository:

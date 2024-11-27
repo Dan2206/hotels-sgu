@@ -8,7 +8,7 @@ from project.schemas.buyer import BuyerSchema, BuyerCreateUpdateSchema
 from project.infrastructure.postgres.models import Buyer
 
 from project.core.config import settings
-from project.core.exceptions import BuyerNotFound
+from project.core.exceptions.buyer import BuyerNotFound
 
 
 class BuyerRepository:

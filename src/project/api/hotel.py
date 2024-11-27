@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 
 from project.schemas.hotel import HotelSchema, HotelCreateUpdateSchema
-from project.core.exceptions import HotelNotFound, HotelStarsIncorrect, HotelAlreadyExists
+from project.core.exceptions.hotel import HotelNotFound, HotelStarsIncorrect, HotelAlreadyExists
 from project.api.depends import database, hotel_repo
 
 router = APIRouter()

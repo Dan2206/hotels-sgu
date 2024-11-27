@@ -8,7 +8,7 @@ from project.schemas.price_service import PriceServiceSchema, PriceServiceCreate
 from project.infrastructure.postgres.models import PriceService
 
 from project.core.config import settings
-from project.core.exceptions import PriceNotFound, PriceBadForeignKey, PriceBadPrice, PriceBadDate
+from project.core.exceptions.price import PriceNotFound, PriceBadForeignKey, PriceBadPrice, PriceBadDate
 
 
 class PriceServiceRepository:

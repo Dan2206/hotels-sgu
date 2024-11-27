@@ -8,7 +8,7 @@ from project.schemas.service import ServiceSchema, ServiceCreateUpdateSchema
 from project.infrastructure.postgres.models import Service
 
 from project.core.config import settings
-from project.core.exceptions import ServiceNoHotel, ServiceAlreadyExists, ServiceNotFound
+from project.core.exceptions.serivce import ServiceNoHotel, ServiceAlreadyExists, ServiceNotFound
 
 
 class ServiceRepository:

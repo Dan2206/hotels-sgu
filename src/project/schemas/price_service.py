@@ -6,7 +6,7 @@ class PriceServiceCreateUpdateSchema(BaseModel):
     service: int
     date_of_start: date
     date_of_end: date
-    price: int = Field(..., gt=0)
+    price: int
 
 
 class PriceServiceSchema(PriceServiceCreateUpdateSchema):

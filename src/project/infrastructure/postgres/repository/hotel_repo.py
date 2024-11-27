@@ -8,7 +8,7 @@ from project.schemas.hotel import HotelSchema, HotelCreateUpdateSchema
 from project.infrastructure.postgres.models import Hotel
 
 from project.core.config import settings
-from project.core.exceptions import HotelNotFound, HotelStarsIncorrect, HotelAlreadyExists
+from project.core.exceptions.hotel import HotelNotFound, HotelStarsIncorrect, HotelAlreadyExists
 
 
 class HotelRepository:

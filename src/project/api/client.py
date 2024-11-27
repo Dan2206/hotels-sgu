@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 
 from project.schemas.client import ClientSchema, ClientCreateUpdateSchema
-from project.core.exceptions import ClientNotFound, ClientAlreadyExists, ClientAlreadyExistsEmail, ClientAlreadyExistsDoc
+from project.core.exceptions.client import ClientNotFound, ClientAlreadyExists, ClientAlreadyExistsEmail, ClientAlreadyExistsDoc
 from project.api.depends import database, client_repo
 
 router = APIRouter()

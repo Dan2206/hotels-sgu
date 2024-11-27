@@ -8,7 +8,7 @@ from project.schemas.booking import BookingSchema, BookingCreateUpdateSchema
 from project.infrastructure.postgres.models import Booking
 
 from project.core.config import settings
-from project.core.exceptions import BookingNotFound, BookingBadDate, BookingBadForeignKey
+from project.core.exceptions.booking import BookingNotFound, BookingBadDate, BookingBadForeignKey
 
 
 class BookingRepository:

@@ -8,7 +8,7 @@ from project.schemas.residence import ResidenceSchema, ResidenceCreateUpdateSche
 from project.infrastructure.postgres.models import Residence
 
 from project.core.config import settings
-from project.core.exceptions import ResidenceNotFound, ResidenceBadDate, ResidenceBadForeignKey
+from project.core.exceptions.residence import ResidenceNotFound, ResidenceBadDate, ResidenceBadForeignKey
 
 
 class ResidenceRepository:

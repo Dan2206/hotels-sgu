@@ -8,7 +8,7 @@ from project.schemas.client import ClientSchema, ClientCreateUpdateSchema
 from project.infrastructure.postgres.models import Client
 
 from project.core.config import settings
-from project.core.exceptions import ClientNotFound, ClientAlreadyExists, ClientAlreadyExistsDoc, ClientAlreadyExistsEmail
+from project.core.exceptions.client import ClientNotFound, ClientAlreadyExists, ClientAlreadyExistsDoc, ClientAlreadyExistsEmail
 
 
 class ClientRepository:

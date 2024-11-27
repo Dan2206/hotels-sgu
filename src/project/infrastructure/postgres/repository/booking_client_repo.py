@@ -8,7 +8,7 @@ from project.schemas.booking_client import BookingClientSchema, BookingClientCre
 from project.infrastructure.postgres.models import BookingClient
 
 from project.core.config import settings
-from project.core.exceptions import BookingClientNotFound
+from project.core.exceptions.booking_client import BookingClientNotFound, BookingClientBadForeignKey
 
 
 class BookingClientRepository:
@@ -57,11 +57,11 @@ class BookingClientRepository:
             .values(booking_client.model_dump())
             .returning(self._collection)
         )
-        # try: NO ERRORS AVAILABLE
-        created_booking_client = await session.scalar(query)
-        await session.flush()
-        # except IntegrityError as err:
-        #     raise
+        try:
+            created_booking_client = await session.scalar(query)
+            await session.flush()
+        except IntegrityError as err:
+            raise BookingClientBadForeignKey
         return BookingClientSchema.model_validate(obj=created_booking_client)
 
     async def update_booking_client(

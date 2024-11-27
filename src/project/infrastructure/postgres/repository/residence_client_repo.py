@@ -8,7 +8,7 @@ from project.schemas.residence_client import ResidenceClientSchema, ResidenceCli
 from project.infrastructure.postgres.models import ResidenceClient
 
 from project.core.config import settings
-from project.core.exceptions import ResidenceClientNotFound
+from project.core.exceptions.residence_client import ResidenceClientNotFound, ResidenceClientBadForeignKey
 
 
 class ResidenceClientRepository:
@@ -57,10 +57,11 @@ class ResidenceClientRepository:
             .values(residence_client.model_dump())
             .returning(self._collection)
         )
-        # try: NO EXCEPTIONS
-        created_residence_client = await session.scalar(query)
-        await session.flush()
-        # except IntegrityError as err:
+        try:
+            created_residence_client = await session.scalar(query)
+            await session.flush()
+        except IntegrityError as err:
+            raise ResidenceClientBadForeignKey()
         return ResidenceClientSchema.model_validate(obj=created_residence_client)
 
     async def update_residence_client(

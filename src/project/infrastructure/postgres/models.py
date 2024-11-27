@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import date, datetime
-from sqlalchemy import UniqueConstraint, ForeignKey, String, CheckConstraint, Text
+from sqlalchemy import UniqueConstraint, ForeignKey, String, CheckConstraint, Text, DateTime
 from sqlalchemy.sql import func
 
 from project.infrastructure.postgres.database import Base
@@ -141,7 +141,7 @@ class Booking(Base):
                                          nullable=False)
     main_client: Mapped[int] = mapped_column(ForeignKey("clients.id", ondelete="CASCADE", onupdate="CASCADE"),
                                              nullable=False)
-    date_of_booking: Mapped[datetime] = mapped_column(nullable=False)
+    date_of_booking: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     date_of_start: Mapped[date] = mapped_column(nullable=False)
     date_of_end: Mapped[date] = mapped_column(nullable=False)
     extra: Mapped[str] = mapped_column(String(500), nullable=True)
