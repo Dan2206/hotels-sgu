@@ -1,10 +1,10 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class HotelCreateUpdateSchema(BaseModel):
     name: str
     address: str
-    stars: int
+    stars: int = Field(..., ge=0, le=5)
 
 
 class HotelSchema(HotelCreateUpdateSchema):

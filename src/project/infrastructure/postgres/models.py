@@ -9,6 +9,9 @@ from project.infrastructure.postgres.database import Base
 class Client(Base):
     __tablename__ = "clients"
 
+    unique_document_constraint = 'unique_document'
+    unique_email_constraint = 'unique_email'
+
     id: Mapped[int] = mapped_column(primary_key=True)
     surname: Mapped[str] = mapped_column(String(100), nullable=False)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -20,8 +23,6 @@ class Client(Base):
     email: Mapped[str] = mapped_column(String(100), nullable=False)
     phone: Mapped[str] = mapped_column(String(100), nullable=True)
 
-    unique_document_constraint = 'unique_document'
-    unique_email_constraint = 'unique_email'
     __table_args__ = (
         UniqueConstraint('document', 'type_of_document', name=unique_document_constraint),
         UniqueConstraint('email', name=unique_email_constraint)
@@ -31,13 +32,14 @@ class Client(Base):
 class Hotel(Base):
     __tablename__ = "hotels"
 
+    check_stars_constraint = 'check_stars'
+    unique_name_constraint = 'unique_name'
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     address: Mapped[str] = mapped_column(String(500), nullable=False)
     stars: Mapped[int] = mapped_column(nullable=False)
 
-    check_stars_constraint = 'check_stars'
-    unique_name_constraint = 'unique_name'
     __table_args__ = (
         CheckConstraint("stars >= 0 AND stars <= 5", name=check_stars_constraint),
         UniqueConstraint('name', name=unique_name_constraint)
@@ -47,14 +49,18 @@ class Hotel(Base):
 class Room(Base):
     __tablename__ = "rooms"
 
+    fkey_room_hotel = 'fkey_rooms_hotels'
+    unique_room_num_constraint = 'unique_room_num'
+
     id: Mapped[int] = mapped_column(primary_key=True)
     room_num: Mapped[int] = mapped_column(nullable=False)
-    hotel: Mapped[int] = mapped_column(ForeignKey("hotels.id", ondelete="CASCADE", onupdate="CASCADE"),
+    hotel: Mapped[int] = mapped_column(ForeignKey("hotels.id", ondelete="CASCADE",
+                                                  onupdate="CASCADE", name=fkey_room_hotel),
                                        nullable=False)
     active: Mapped[bool] = mapped_column(nullable=False)
 
     __table_args__ = (
-        UniqueConstraint("hotel", "room_num", name="uq_hotel_room"),
+        UniqueConstraint("hotel", "room_num", name=unique_room_num_constraint),
     )
 
 
@@ -85,6 +91,9 @@ class RoomType(Base):
 class Price(Base):
     __tablename__ = "prices"
 
+    check_price_constraint = 'check_price_constraint'
+    check_date_constraint = 'check_date_constraint'
+
     id: Mapped[int] = mapped_column(primary_key=True)
     hotel: Mapped[int] = mapped_column(ForeignKey("hotels.id", ondelete="CASCADE", onupdate="CASCADE"),
                                        nullable=False)
@@ -96,8 +105,8 @@ class Price(Base):
     date_of_end: Mapped[date] = mapped_column(nullable=False)
 
     __table_args__ = (
-        CheckConstraint("price > 0"),
-        CheckConstraint("date_of_end >= date_of_start"),
+        CheckConstraint("price > 0", name=check_price_constraint),
+        CheckConstraint("date_of_end >= date_of_start", name=check_date_constraint),
     )
 
 
@@ -113,6 +122,8 @@ class Buyer(Base):
 
 class Booking(Base):
     __tablename__ = "bookings"
+
+    date_constraint = 'date_comp_constraint'
 
     id: Mapped[int] = mapped_column(primary_key=True)
     hotel: Mapped[int] = mapped_column(ForeignKey("hotels.id",
@@ -132,7 +143,7 @@ class Booking(Base):
     reason_cancel: Mapped[str] = mapped_column(String(500), nullable=True)
 
     __table_args__ = (
-        CheckConstraint("date_of_end > date_of_start"),
+        CheckConstraint("date_of_end > date_of_start", name=date_constraint),
     )
 
 
@@ -201,7 +212,7 @@ class ServiceRendered(Base):
                                          nullable=False)
     client: Mapped[int] = mapped_column(ForeignKey("clients.id", ondelete="CASCADE", onupdate="CASCADE"),
                                         nullable=False)
-    is_rendered: Mapped[bool] = mapped_column(nullable=False)
+    is_rendered: Mapped[bool] = mapped_column(nullable=False, default=False)
     date_of_render: Mapped[datetime] = mapped_column(nullable=False)
 
 
