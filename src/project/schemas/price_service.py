@@ -9,7 +9,7 @@ class PriceServiceCreateUpdateSchema(BaseModel):
     price: int = Field(..., gt=0)
 
 
-class HotelSchema(PriceServiceCreateUpdateSchema):
+class PriceServiceSchema(PriceServiceCreateUpdateSchema):
     model_config = ConfigDict(from_attributes=True)
 
     id: int

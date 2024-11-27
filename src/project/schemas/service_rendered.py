@@ -9,7 +9,7 @@ class ServiceRenderedCreateUpdateSchema(BaseModel):
     date_of_render: datetime
 
 
-class SerivceRenderedSchema(ServiceRenderedCreateUpdateSchema):
+class ServiceRenderedSchema(ServiceRenderedCreateUpdateSchema):
     model_config = ConfigDict(from_attributes=True)
 
     id: int

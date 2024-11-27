@@ -78,6 +78,8 @@ class RoomTypeBook(Base):
 class RoomType(Base):
     __tablename__ = "room_types"
 
+    check_date_constraint = 'check_date_room_type_constraint'
+
     id: Mapped[int] = mapped_column(primary_key=True)
     room: Mapped[int] = mapped_column(ForeignKey("rooms.id", ondelete="CASCADE", onupdate="CASCADE"),
                                       nullable=False)
@@ -86,6 +88,9 @@ class RoomType(Base):
                                           nullable=False)
     date_of_start: Mapped[date] = mapped_column(nullable=False)
     date_of_end: Mapped[date] = mapped_column(nullable=False)
+    __table_args__ = (
+        CheckConstraint("date_of_end > date_of_start", name=check_date_constraint),
+    )
 
 
 class Price(Base):
@@ -160,6 +165,8 @@ class BookingClient(Base):
 class Residence(Base):
     __tablename__ = "residences"
 
+    date_constraint = 'date_comp_residences_constraint'
+
     id: Mapped[int] = mapped_column(primary_key=True)
     hotel: Mapped[int] = mapped_column(ForeignKey("hotels.id", ondelete="CASCADE", onupdate="CASCADE"),
                                        nullable=False)
@@ -176,7 +183,7 @@ class Residence(Base):
     sum_price: Mapped[int] = mapped_column(nullable=True)
 
     __table_args__ = (
-        CheckConstraint("date_of_end > date_of_start"),
+        CheckConstraint("date_of_end > date_of_start", name=date_constraint),
     )
 
 
@@ -193,6 +200,8 @@ class ResidenceClient(Base):
 class Service(Base):
     __tablename__ = "services"
 
+    unique_hotel_name_constraint = 'unique_hotel_name_constraint'
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     hotel: Mapped[int] = mapped_column(ForeignKey("hotels.id", ondelete="CASCADE", onupdate="CASCADE"),
@@ -200,7 +209,7 @@ class Service(Base):
     is_active: Mapped[bool] = mapped_column(nullable=False)
 
     __table_args__ = (
-        UniqueConstraint("hotel", "name"),
+        UniqueConstraint("hotel", "name", name=unique_hotel_name_constraint),
     )
 
 
@@ -219,6 +228,9 @@ class ServiceRendered(Base):
 class PriceService(Base):
     __tablename__ = "prices_services"
 
+    check_price_constraint = 'check_price_service_constraint'
+    check_date_constraint = 'check_date_service_constraint'
+
     id: Mapped[int] = mapped_column(primary_key=True)
     service: Mapped[int] = mapped_column(ForeignKey("services.id", ondelete="CASCADE", onupdate="CASCADE"),
                                          nullable=False)
@@ -227,6 +239,6 @@ class PriceService(Base):
     price: Mapped[int] = mapped_column(nullable=False)
 
     __table_args__ = (
-        CheckConstraint("date_of_end > date_of_start"),
-        CheckConstraint("price > 0"),
+        CheckConstraint("date_of_end > date_of_start", name=check_date_constraint),
+        CheckConstraint("price > 0", name=check_price_constraint),
     )
