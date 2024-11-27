@@ -8,7 +8,7 @@ from project.schemas.room_type_book import RoomTypeBookSchema, RoomTypeBookCreat
 from project.infrastructure.postgres.models import RoomTypeBook
 
 from project.core.config import settings
-from project.core.exceptions import RoomTypeBookTypeBookNotFound
+from project.core.exceptions import RoomTypeBookNotFound, RoomTypeBook
 
 
 class RoomTypeBookRepository:
@@ -57,14 +57,10 @@ class RoomTypeBookRepository:
             .values(room_type_book.model_dump())
             .returning(self._collection)
         )
-        try:
-            created_room_type_book = await session.scalar(query)
-            await session.flush()
-        except IntegrityError as err:
-            if RoomTypeBook.unique_room_type_book_num_constraint in str(err.orig):
-                raise RoomTypeBookNumAlreadyExists(hotel=room_type_book.hotel, room_type_book_num=room_type_book.room_type_book_num)
-            else:
-                raise RoomTypeBookNoHotel(hotel=room_type_book.hotel)
+        # try: NO EXCEPTIONS AVAILABLE
+        created_room_type_book = await session.scalar(query)
+        await session.flush()
+        # except IntegrityError as err:
         return RoomTypeBookSchema.model_validate(obj=created_room_type_book)
 
     async def update_room_type_book(

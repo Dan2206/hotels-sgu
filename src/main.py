@@ -6,7 +6,21 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from project.core.config import settings
-from project.api.routes import router
+from project.api import booking
+from project.api import booking_client
+from project.api import buyer
+from project.api import client
+from project.api import healthcheck
+from project.api import hotel
+from project.api import price
+from project.api import price_service
+from project.api import residence
+from project.api import residence_client
+from project.api import room
+from project.api import room_type
+from project.api import room_type_book
+from project.api import service
+from project.api import service_rendered
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +44,21 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.include_router(router, prefix="/api", tags=["User APIs"])
+    app.include_router(healthcheck.router, prefix="/api/healthcheck", tags=["Healthcheck APIs"])
+    app.include_router(client.router, prefix="/api/client", tags=["Clients APIs"])
+    app.include_router(hotel.router, prefix="/api/hotel", tags=["Hotels APIs"])
+    app.include_router(room.router, prefix="/api/room", tags=["Rooms APIs"])
+    #app.include_router(room_type_book.router, prefix="/api/room-type-book", tags=["Rooms Types Book APIs"])
+    #app.include_router(room_type.router, prefix="/api/room-type", tags=["Room Types APIs"])
+    #app.include_router(price.router, prefix="/api/price", tags=["Prices APIs"])
+    #app.include_router(buyer.router, prefix="/api/buyer", tags=["Buyers APIs"])
+    #app.include_router(booking.router, prefix="/api/booking", tags=["Bookings APIs"])
+    #app.include_router(booking_client.router, prefix="/api/booking-client", tags=["Booking Clients APIs"])
+    #app.include_router(residence.router, prefix="/api/residence", tags=["Residences APIs"])
+    #app.include_router(residence_client.router, prefix="/api/residence-client", tags=["Residence Clients APIs"])
+    #app.include_router(service.router, prefix="/api/service", tags=["Services APIs"])
+    #app.include_router(service_rendered.router, prefix="/api/service-rendered", tags=["Service Rendered APIs"])
+    #app.include_router(price_service.router, prefix="/api/price-service", tags=["Price Services APIs"])
 
     return app
 

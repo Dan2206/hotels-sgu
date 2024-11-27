@@ -4,10 +4,33 @@ from project.schemas.healthcheck import HealthCheckSchema
 from project.schemas.client import ClientSchema, ClientCreateUpdateSchema
 from project.schemas.hotel import HotelSchema, HotelCreateUpdateSchema
 from project.schemas.room import RoomSchema, RoomCreateUpdateSchema
+from project.schemas.room_type_book import RoomTypeBookSchema, RoomTypeBookCreateUpdateSchema
+from project.schemas.room_type import RoomTypeSchema, RoomTypeCreateUpdateSchema
+from project.schemas.price import PriceSchema, PriceCreateUpdateSchema
+from project.schemas.buyer import BuyerSchema, BuyerCreateUpdateSchema
+from project.schemas.booking import BookingSchema, BookingCreateUpdateSchema
+from project.schemas.booking_client import BookingClientSchema, BookingClientCreateUpdateSchema
+from project.schemas.residence import ResidenceSchema, ResidenceCreateUpdateSchema
+from project.schemas.residence_client import ResidenceClientSchema, ResidenceClientCreateUpdateSchema
+from project.schemas.service import ServiceSchema, ServiceCreateUpdateSchema
+from project.schemas.service_rendered import ServiceRenderedSchema, ServiceRenderedCreateUpdateSchema
+from project.schemas.price_service import PriceServiceSchema, PriceServiceCreateUpdateSchema
 
 from project.core.exceptions import ClientNotFound, ClientAlreadyExists, ClientAlreadyExistsEmail, ClientAlreadyExistsDoc
 from project.core.exceptions import HotelNotFound, HotelStarsIncorrect, HotelAlreadyExists
 from project.core.exceptions import RoomNoHotel, RoomNumAlreadyExists, RoomNotFound
+from project.core.exceptions import BuyerNotFound
+from project.core.exceptions import BookingNotFound, BookingBadForeignKey, BookingBadDate
+from project.core.exceptions import BookingClientNotFound
+# price exceptions are common for prices of rooms and prices of services
+from project.core.exceptions import PriceNotFound, PriceBadForeignKey, PriceBadDate, PriceBadPrice
+from project.core.exceptions import ResidenceClientNotFound
+from project.core.exceptions import ResidenceNotFound, ResidenceBadForeignKey, ResidenceBadDate
+from project.core.exceptions import RoomTypeBookNotFound
+from project.core.exceptions import RoomTypeNotFound, RoomTypeBadForeignKey, RoomTypeBadDate
+from project.core.exceptions import ServiceRenderedNotFound, ServiceRenderedBadForeignKey
+from project.core.exceptions import ServiceAlreadyExists, ServiceNoHotel, ServiceNotFound
+
 from project.api.depends import database, client_repo, hotel_repo, room_repo
 
 router = APIRouter()
