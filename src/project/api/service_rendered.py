@@ -1,13 +1,19 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 
+from project.schemas.user import UserSchema
 from project.schemas.service_rendered import ServiceRenderedSchema, ServiceRenderedCreateUpdateSchema
 from project.core.exceptions.service_rendered import ServiceRenderedNotFound, ServiceRenderedBadForeignKey
-from project.api.depends import database, service_rendered_repo
+from project.api.depends import database, service_rendered_repo, get_current_user, check_for_admin_access
 
 router = APIRouter()
 
 
-@router.get("/all_service_rendereds", response_model=list[ServiceRenderedSchema], status_code=status.HTTP_200_OK)
+@router.get(
+    "/all_service_rendereds",
+    response_model=list[ServiceRenderedSchema],
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(get_current_user)],
+)
 async def get_all_service_rendereds() -> list[ServiceRenderedSchema]:
     async with database.session() as session:
         all_service_rendereds = await service_rendered_repo.get_all_service_rendereds(session=session)
@@ -15,7 +21,12 @@ async def get_all_service_rendereds() -> list[ServiceRenderedSchema]:
     return all_service_rendereds
 
 
-@router.get("/service_rendered/{service_rendered_id}", response_model=ServiceRenderedSchema, status_code=status.HTTP_200_OK)
+@router.get(
+    "/service_rendered/{service_rendered_id}",
+    response_model=ServiceRenderedSchema,
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(get_current_user)],
+)
 async def get_service_rendered_by_id(
     service_rendered_id: int,
 ) -> ServiceRenderedSchema:
@@ -27,7 +38,12 @@ async def get_service_rendered_by_id(
     return service_rendered
 
 
-@router.post("/add_service_rendered", response_model=ServiceRenderedSchema, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/add_service_rendered",
+    response_model=ServiceRenderedSchema,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(get_current_user)],
+)
 async def add_service_rendered(
     service_rendered_dto: ServiceRenderedCreateUpdateSchema,
 ) -> ServiceRenderedSchema:
@@ -43,6 +59,7 @@ async def add_service_rendered(
     "/update_service_rendered/{service_rendered_id}",
     response_model=ServiceRenderedSchema,
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(get_current_user)],
 )
 async def update_service_rendered(
     service_rendered_id: int,
@@ -60,10 +77,15 @@ async def update_service_rendered(
     return updated_service_rendered
 
 
-@router.delete("/delete_service_rendered/{service_rendered_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/delete_service_rendered/{service_rendered_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
 async def delete_service_rendered(
     service_rendered_id: int,
+    current_user: UserSchema = Depends(get_current_user),
 ) -> None:
+    check_for_admin_access(user=current_user)
     try:
         async with database.session() as session:
             service_rendered = await service_rendered_repo.delete_service_rendered(session=session, service_rendered_id=service_rendered_id)

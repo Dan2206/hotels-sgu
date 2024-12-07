@@ -78,5 +78,5 @@ def check_for_admin_access(user: UserSchema) -> None:
     if not user.is_admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Только админ имеет права добавлять/изменять/удалять в данной таблице"
+            detail="Только админ имеет право на данное действие"
         )
