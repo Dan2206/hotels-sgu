@@ -1,13 +1,19 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 
+from project.schemas.user import UserSchema
 from project.schemas.booking_client import BookingClientSchema, BookingClientCreateUpdateSchema
 from project.core.exceptions.booking_client import BookingClientNotFound
-from project.api.depends import database, booking_client_repo
+from project.api.depends import database, booking_client_repo, get_current_user, check_for_admin_access
 
 router = APIRouter()
 
 
-@router.get("/all_booking_clients", response_model=list[BookingClientSchema], status_code=status.HTTP_200_OK)
+@router.get(
+    "/all_booking_clients",
+    response_model=list[BookingClientSchema],
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(get_current_user)],
+)
 async def get_all_booking_clients() -> list[BookingClientSchema]:
     async with database.session() as session:
         all_booking_clients = await booking_client_repo.get_all_booking_clients(session=session)
@@ -15,7 +21,12 @@ async def get_all_booking_clients() -> list[BookingClientSchema]:
     return all_booking_clients
 
 
-@router.get("/booking_client/{booking_client_id}", response_model=BookingClientSchema, status_code=status.HTTP_200_OK)
+@router.get(
+    "/booking_client/{booking_client_id}",
+    response_model=BookingClientSchema,
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(get_current_user)],
+)
 async def get_booking_client_by_id(
     booking_client_id: int,
 ) -> BookingClientSchema:
@@ -27,7 +38,12 @@ async def get_booking_client_by_id(
     return booking_client
 
 
-@router.post("/add_booking_client", response_model=BookingClientSchema, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/add_booking_client",
+    response_model=BookingClientSchema,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(get_current_user)],
+)
 async def add_booking_client(
     booking_client_dto: BookingClientCreateUpdateSchema,
 ) -> BookingClientSchema:
@@ -40,6 +56,7 @@ async def add_booking_client(
     "/update_booking_client/{booking_client_id}",
     response_model=BookingClientSchema,
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(get_current_user)],
 )
 async def update_booking_client(
     booking_client_id: int,
@@ -60,7 +77,9 @@ async def update_booking_client(
 @router.delete("/delete_booking_client/{booking_client_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_booking_client(
     booking_client_id: int,
+    current_user: UserSchema = Depends(get_current_user),
 ) -> None:
+    check_for_admin_access(user=current_user)
     try:
         async with database.session() as session:
             booking_client = await booking_client_repo.delete_booking_client(session=session, booking_client_id=booking_client_id)

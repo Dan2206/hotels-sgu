@@ -3,7 +3,7 @@ from datetime import date, datetime
 
 
 class ServiceAlreadyExists(BaseException):
-    _ERROR_MESSAGE_TEMPLATE: Final[str] = "Услуга с названием '{service_num}' в отеле с id '{hotel}' уже существует"
+    _ERROR_MESSAGE_TEMPLATE: Final[str] = "Услуга с названием '{service_name}' в отеле с id '{hotel}' уже существует"
     message: str
 
     def __init__(self, name: str, hotel: int) -> None:

@@ -1,8 +1,8 @@
 from typing import Type
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import text, select, insert, update, delete
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import text, select, insert, update, delete, true
+from sqlalchemy.exc import IntegrityError, PendingRollbackError, InterfaceError
 
 from project.schemas.client import ClientSchema, ClientCreateUpdateSchema
 from project.infrastructure.postgres.models import Client
@@ -18,11 +18,12 @@ class ClientRepository:
         self,
         session: AsyncSession,
     ) -> bool:
-        query = "select 1;"
+        query = select(true())
 
-        result = await session.scalar(text(query))
-
-        return True if result else False
+        try:
+            return await session.scalar(query)
+        except (Exception, InterfaceError):
+            return False
 
     async def get_all_clients(
         self,

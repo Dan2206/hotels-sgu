@@ -21,6 +21,8 @@ from project.api import room_type
 from project.api import room_type_book
 from project.api import service
 from project.api import service_rendered
+from project.api import user
+from project.api import auth
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +61,8 @@ def create_app() -> FastAPI:
     app.include_router(service.router, prefix="/api/service", tags=["Services APIs"])
     app.include_router(service_rendered.router, prefix="/api/service-rendered", tags=["Service Rendered APIs"])
     app.include_router(price_service.router, prefix="/api/price-service", tags=["Price Services APIs"])
+    app.include_router(user.router, prefix="/api/user", tags=["Users APIs"])
+    app.include_router(auth.router, tags=["Auth APIs"])
 
     return app
 

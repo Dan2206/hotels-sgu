@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import date, datetime
-from sqlalchemy import UniqueConstraint, ForeignKey, String, CheckConstraint, Text, DateTime
+from sqlalchemy import UniqueConstraint, ForeignKey, String, CheckConstraint, Text, DateTime, false
 from sqlalchemy.sql import func
 
 from project.infrastructure.postgres.database import Base
@@ -242,3 +242,16 @@ class PriceService(Base):
         CheckConstraint("date_of_end > date_of_start", name=check_date_constraint),
         CheckConstraint("price > 0", name=check_price_constraint),
     )
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    surname: Mapped[str] = mapped_column(nullable=False)
+    name: Mapped[str] = mapped_column(nullable=False)
+    patronymic: Mapped[str] = mapped_column(nullable=False)
+    is_admin: Mapped[bool] = mapped_column(default=False, server_default=false())
+    email: Mapped[str] = mapped_column(nullable=False, unique=True)
+    password: Mapped[str] = mapped_column(nullable=False)
+    phone_number: Mapped[str] = mapped_column(nullable=False)

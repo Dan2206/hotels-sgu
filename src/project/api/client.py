@@ -1,13 +1,19 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 
+from project.schemas.user import UserSchema
 from project.schemas.client import ClientSchema, ClientCreateUpdateSchema
 from project.core.exceptions.client import ClientNotFound, ClientAlreadyExists, ClientAlreadyExistsEmail, ClientAlreadyExistsDoc
-from project.api.depends import database, client_repo
+from project.api.depends import database, client_repo, get_current_user, check_for_admin_access
 
 router = APIRouter()
 
 
-@router.get("/all_clients", response_model=list[ClientSchema], status_code=status.HTTP_200_OK)
+@router.get(
+    "/all_clients",
+    response_model=list[ClientSchema],
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(get_current_user)],
+)
 async def get_all_clients() -> list[ClientSchema]:
     async with database.session() as session:
         all_clients = await client_repo.get_all_clients(session=session)
@@ -15,7 +21,12 @@ async def get_all_clients() -> list[ClientSchema]:
     return all_clients
 
 
-@router.get("/client/{client_id}", response_model=ClientSchema, status_code=status.HTTP_200_OK)
+@router.get(
+    "/client/{client_id}",
+    response_model=ClientSchema,
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(get_current_user)],
+)
 async def get_client_by_id(
     client_id: int,
 ) -> ClientSchema:
@@ -27,7 +38,12 @@ async def get_client_by_id(
     return client
 
 
-@router.post("/add_client", response_model=ClientSchema, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/add_client",
+    response_model=ClientSchema,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(get_current_user)],
+)
 async def add_client(
     client_dto: ClientCreateUpdateSchema,
 ) -> ClientSchema:
@@ -43,6 +59,7 @@ async def add_client(
     "/update_client/{client_id}",
     response_model=ClientSchema,
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(get_current_user)],
 )
 async def update_client(
     client_id: int,
@@ -63,7 +80,9 @@ async def update_client(
 @router.delete("/delete_client/{client_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_client(
     client_id: int,
+    current_user: UserSchema = Depends(get_current_user),
 ) -> None:
+    check_for_admin_access(user=current_user)
     try:
         async with database.session() as session:
             client = await client_repo.delete_client(session=session, client_id=client_id)

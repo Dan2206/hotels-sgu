@@ -1,13 +1,19 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 
+from project.schemas.user import UserSchema
 from project.schemas.room import RoomSchema, RoomCreateUpdateSchema
 from project.core.exceptions.room import RoomNoHotel, RoomNumAlreadyExists, RoomNotFound
-from project.api.depends import database, client_repo, hotel_repo, room_repo
+from project.api.depends import database, client_repo, hotel_repo, room_repo, get_current_user, check_for_admin_access
 
 router = APIRouter()
 
 
-@router.get("/all_rooms", response_model=list[RoomSchema], status_code=status.HTTP_200_OK)
+@router.get(
+    "/all_rooms",
+    response_model=list[RoomSchema],
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(get_current_user)],
+)
 async def get_all_rooms() -> list[RoomSchema]:
     async with database.session() as session:
         all_rooms = await room_repo.get_all_rooms(session=session)
@@ -15,7 +21,12 @@ async def get_all_rooms() -> list[RoomSchema]:
     return all_rooms
 
 
-@router.get("/room/{room_id}", response_model=RoomSchema, status_code=status.HTTP_200_OK)
+@router.get(
+    "/room/{room_id}",
+    response_model=RoomSchema,
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(get_current_user)],
+)
 async def get_room_by_id(
     room_id: int,
 ) -> RoomSchema:
@@ -30,7 +41,9 @@ async def get_room_by_id(
 @router.post("/add_room", response_model=RoomSchema, status_code=status.HTTP_201_CREATED)
 async def add_room(
     room_dto: RoomCreateUpdateSchema,
+    current_user: UserSchema = Depends(get_current_user),
 ) -> RoomSchema:
+    check_for_admin_access(current_user)
     try:
         async with database.session() as session:
             new_room = await room_repo.create_room(session=session, room=room_dto)
@@ -49,7 +62,9 @@ async def add_room(
 async def update_room(
     room_id: int,
     room_dto: RoomCreateUpdateSchema,
+    current_user: UserSchema = Depends(get_current_user),
 ) -> RoomSchema:
+    check_for_admin_access(current_user)
     try:
         async with database.session() as session:
             updated_room = await room_repo.update_room(
@@ -65,7 +80,9 @@ async def update_room(
 @router.delete("/delete_room/{room_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_room(
     room_id: int,
+    current_user: UserSchema = Depends(get_current_user),
 ) -> None:
+    check_for_admin_access(current_user)
     try:
         async with database.session() as session:
             room = await room_repo.delete_room(session=session, room_id=room_id)
